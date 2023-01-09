@@ -2,23 +2,36 @@
 
 public partial class MainPage : ContentPage
 {
-	int count = 0;
+    public MainPage()
+    {
+        InitializeComponent();
+    }
 
-	public MainPage()
-	{
-		InitializeComponent();
-	}
+    private void OnShowNewWindowClicked(object sender, EventArgs e)
+    {
+        MainPage mainPage = new();
 
-	private void OnCounterClicked(object sender, EventArgs e)
-	{
-		count++;
+        Window window = new()
+        {
+            Title = "Window 2",
+            Page = mainPage,
+        };
 
-		if (count == 1)
-			CounterBtn.Text = $"Clicked {count} time";
-		else
-			CounterBtn.Text = $"Clicked {count} times";
+        Application.Current!.OpenWindow(window);
+    }
 
-		SemanticScreenReader.Announce(CounterBtn.Text);
-	}
+    public void OnDragStarting(object sender, DragStartingEventArgs e)
+    {
+        GestureRecognizer recognizer = (GestureRecognizer)sender;
+        e.Data.Properties.Add("MyImage", (Image)recognizer.Parent);
+    }
+
+    public void OnImageDrop(object sender, DropEventArgs e)
+    {
+        Image droppedImage = (Image)e.Data.Properties["MyImage"];
+
+        droppedImage.Opacity = 0.5;
+        SourceZone.Remove(droppedImage);
+        MyDropZone.Add(droppedImage);
+    }
 }
-
